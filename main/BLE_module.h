@@ -6,6 +6,10 @@
 #define PRESSED_CONFIG_TIME     3000 // IN MICRO SEC
 #define BLE_NAME                "OKTA-T"
 
+#define SERVICE_UUID 0xD4C3
+#define READ_CHARA_UUID 0xD4C2
+#define WRITE_CHARA_UUID 0xD4C1
+
 static void ble_app_advertise(void);
 
 /**

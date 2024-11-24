@@ -25,13 +25,13 @@ void app_main()
     }
     ESP_ERROR_CHECK(err);
 
-    // Memory_LoadString("storage", "name", name, sizeof(name));
-    // Memory_LoadInt32("storage","ble_pass",&pass);
+    Memory_LoadString("storage", "name", name, sizeof(name));
+    Memory_LoadInt32("storage","ble_pass",&pass);
     // Memory_SaveString("storage","name","Ali Mahrez");
     // Memory_SaveInt32("storage", "ble_pass",1234);
 
     printf("%s\n", name);
-    printf("%ld\n", pass);
+    printf("%ld\n",pass);
 
     connect_ble();
     xTaskCreate(Task_ConfigMode, "Task_ConfigMode", 2048, NULL, 5, NULL);

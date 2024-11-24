@@ -25,6 +25,8 @@
 #include "esp_mac.h"
 #include "driver/gpio.h"
 #include "BLE_module.h"
+#include "Memory_module.h"
+
 
 
 char *TAG = "BLE-Server";
@@ -33,66 +35,32 @@ uint8_t ble_addr_type;
 struct ble_gap_adv_params adv_params;
 bool status = false;
 
-static int device_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+static int BLE_GetConfigData(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    // printf("Data from the client: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
-
     char *data = (char *)ctxt->om->om_data;
     printf("%d %s\n", strcmp(data, (char *)"LIGHT ON") == 0, data);
-    if (strcmp(data, (char *)"LIGHT ON\0") == 0)
-    {
-        printf("LIGHT ON\n");
-        gpio_set_level(GPIO_NUM_2, 1);
-    }
-    else if (strcmp(data, (char *)"LIGHT OFF\0") == 0)
-    {
-        printf("LIGHT OFF\n");
-        gpio_set_level(GPIO_NUM_2, 0);
-    }
-    else if (strcmp(data, (char *)"LED ON\0") == 0)
-    {
-        printf("LED ON\n");
-        gpio_set_level(GPIO_NUM_4, 1);
-    }
-    else if (strcmp(data, (char *)"LED OFF\0") == 0)
-    {
-        printf("LED OFF\n");
-        gpio_set_level(GPIO_NUM_4, 0);
-    }
-    // else
-    // {
-    //     printf("Data from the client: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
-    // }
     memset(data, 0, strlen(data));
 
     return 0;
 }
 
-static int device_read(uint16_t con_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+static int BLE_NotifyConfigData(uint16_t con_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     os_mbuf_append(ctxt->om, "Data from the server", strlen("Data from the server"));
     return 0;
 }
 
-static int device_read2(uint16_t con_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
-{
-    os_mbuf_append(ctxt->om, "Message from Innovate Yourself", strlen("Message from Innovate Yourself"));
-    return 0;
-}
-
 static const struct ble_gatt_svc_def gatt_svcs[] = {
     {.type = BLE_GATT_SVC_TYPE_PRIMARY,
-     .uuid = BLE_UUID16_DECLARE(0x180), // Define UUID for device type
+     .uuid = BLE_UUID16_DECLARE(SERVICE_UUID), // Define UUID for device type
      .characteristics = (struct ble_gatt_chr_def[]){
-         {.uuid = BLE_UUID16_DECLARE(0xFEF4), // Define UUID for reading
+         {.uuid = BLE_UUID16_DECLARE(READ_CHARA_UUID), // Define UUID for reading
           .flags = BLE_GATT_CHR_F_READ,
-          .access_cb = device_read},
-         {.uuid = BLE_UUID16_DECLARE(0xDEAD), // Define UUID for writing
-          .flags = BLE_GATT_CHR_F_WRITE,
-          .access_cb = device_write},
-         {.uuid = BLE_UUID16_DECLARE(0xDEAD), // Define UUID for writing
-          .flags = BLE_GATT_CHR_F_READ,
-          .access_cb = device_read2},
+          .access_cb = BLE_NotifyConfigData},
+
+         {.uuid = BLE_UUID16_DECLARE(WRITE_CHARA_UUID), // Define UUID for writing
+          .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
+          .access_cb = BLE_GetConfigData},
          {0}}},
     {0}};
 
