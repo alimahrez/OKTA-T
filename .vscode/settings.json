@@ -1,0 +1,9 @@
+{
+    "idf.adapterTargetName": "esp32",
+    "idf.flashType": "UART",
+    "idf.portWin": "COM6",
+    "files.associations": {
+        "stdio.h": "c",
+        "esp_nimble_hci.h": "c"
+    }
+}
