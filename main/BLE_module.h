@@ -2,7 +2,7 @@
 #define BLE_MODULE_H
 
 
-#define BLE_CONFIG_GPIO         GPIO_NUM_5
+#define BLE_CONFIG_GPIO         GPIO_NUM_35
 #define PRESSED_CONFIG_TIME     3000 // IN MICRO SEC
 #define BLE_NAME                "OKTA-T"
 
