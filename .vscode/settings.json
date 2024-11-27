@@ -11,7 +11,9 @@
         "string_view": "c",
         "json_module.h": "c",
         "datahandle.h": "c",
-        "memory_module.h": "c"
+        "memory_module.h": "c",
+        "relay_module.h": "c",
+        "ble_module.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

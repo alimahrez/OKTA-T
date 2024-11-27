@@ -7,6 +7,7 @@
 #include "BLE_module.h"
 #include "Memory_module.h"
 #include "DataHandle.h"
+#include "Relay_module.h"
 
 void Task_ConfigMode(void *param)
 {
