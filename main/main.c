@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "BLE_module.h"
 #include "Memory_module.h"
+#include "DataHandle.h"
 
 void Task_ConfigMode(void *param)
 {
@@ -14,8 +15,9 @@ void Task_ConfigMode(void *param)
 
 void app_main()
 {
-    char name[32]={0};
-    int32_t pass;
+    credentialConfig getData;
+
+
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
@@ -25,13 +27,27 @@ void app_main()
     }
     ESP_ERROR_CHECK(err);
 
-    Memory_LoadString("storage", "name", name, sizeof(name));
-    Memory_LoadInt32("storage","ble_pass",&pass);
-    // Memory_SaveString("storage","name","Ali Mahrez");
-    // Memory_SaveInt32("storage", "ble_pass",1234);
+    RetrieveConfigFromStorage(&getData);
 
-    printf("%s\n", name);
-    printf("%ld\n",pass);
+    // printf("%s\n", getData.wifiSSID);
+    // printf("%s\n", getData.wifiPassword);
+
+    // printf("%s\n", getData.mqttBroker);
+    // printf("%ld\n", getData.mqttPort);
+    // printf("%s\n", getData.mqttUsername);
+    // printf("%s\n", getData.mqttPassword);
+
+    // printf("%s\n", getData.relay1);
+    // printf("%s\n", getData.relay2);
+    // printf("%s\n", getData.relay3);
+    // printf("%s\n", getData.relay4);
+    // printf("%s\n", getData.relay5);
+    // printf("%s\n", getData.relay6);
+    // printf("%s\n", getData.relay7);
+    // printf("%s\n", getData.relay8);
+    // printf("%s\n", getData.tempSensor);
+    // printf("%s\n", getData.lightSensor);
+    // printf("%s\n", getData.doorSensor);
 
     connect_ble();
     xTaskCreate(Task_ConfigMode, "Task_ConfigMode", 2048, NULL, 5, NULL);

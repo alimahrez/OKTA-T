@@ -5,7 +5,13 @@
     "files.associations": {
         "stdio.h": "c",
         "esp_nimble_hci.h": "c",
-        "ble_hs.h": "c"
+        "ble_hs.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "json_module.h": "c",
+        "datahandle.h": "c",
+        "memory_module.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

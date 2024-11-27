@@ -13,6 +13,7 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "esp_event.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
@@ -26,19 +27,109 @@
 #include "driver/gpio.h"
 #include "BLE_module.h"
 #include "Memory_module.h"
+#include "JSON_module.h"
+#include "DataHandle.h"
 
-
-
-char *TAG = "BLE-Server";
+static const char *TAG = "BLE-Server";
 uint8_t ble_addr_type;
 
 struct ble_gap_adv_params adv_params;
+
+uint32_t BLE_PASSWORD = 0;
 bool status = false;
+
+struct responseStatus
+{
+    bool IsPasswordTrue;
+    bool IsJosnOk;
+    bool IsChagable;
+    bool IsAccesable;
+} resState;
+
+// int32_t authenticate(const char *saved_pin, const char *input_pin)
+// {
+//     return strcmp(saved_pin, input_pin) == 0;
+// }
+
+// void change_pin(char *saved_pin)
+// {
+//     char new_pin[PIN_LENGTH];
+//     char confirm_pin[PIN_LENGTH];
+
+//     printf("Enter new PIN: ");
+//     scanf("%s", new_pin);
+
+//     printf("Confirm new PIN: ");
+//     scanf("%s", confirm_pin);
+
+//     if (strcmp(new_pin, confirm_pin) == 0)
+//     {
+//         strcpy(saved_pin, new_pin);
+//         printf("PIN changed successfully!\n");
+//     }
+//     else
+//     {
+//         printf("PIN confirmation does not match. Try again.\n");
+//     }
+// }
+
+static int BLE_GetPIN(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    // uint32_t receviedPass;
+    // Memory_LoadInt32("storage","pass",&BLE_PASSWORD);
+    // char *data = (char *)ctxt->om->om_data;
+    // resState.IsJosnOk = JSON_ExtractInt32(data, "password", &receviedPass);
+    // if (!resState.IsJosnOk)
+    // {
+    //     printf("Sorry JSON aren't OK\n");
+    // }
+    // else
+    // {
+    //     resState.IsPasswordTrue = authenticate(BLE_PASSWORD, receviedPass);
+    //     if (!resState.IsPasswordTrue)
+    //     {
+    //         printf("Wrong PIN\n");
+    //     }
+    //     else
+    //     {
+    //         printf("PIN OK\n");
+    //         // give him all the kit configuration
+
+    //     }
+
+    // }
+    // // printf("%d %s\n", strcmp(data, (char *)"LIGHT ON") == 0, data);
+    // memset(data, 0, strlen(data));
+
+    return 0;
+}
+
+static int BLE_NotifyPIN(uint16_t con_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+{
+    os_mbuf_append(ctxt->om, "Data from the server", strlen("Data from the server"));
+    return 0;
+}
 
 static int BLE_GetConfigData(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
+    credentialConfig configBleData;
+    resState.IsPasswordTrue = true;
+    DataErrorHandle getError;
+
     char *data = (char *)ctxt->om->om_data;
-    printf("%d %s\n", strcmp(data, (char *)"LIGHT ON") == 0, data);
+
+    if (!resState.IsPasswordTrue)
+    {
+        resState.IsAccesable = false;
+    }
+    else
+    {
+        resState.IsAccesable = true;
+
+        getError = GetDataAtRunTime(data, &configBleData);
+        DisplyGetError(getError);
+    }
+
     memset(data, 0, strlen(data));
 
     return 0;
@@ -46,22 +137,42 @@ static int BLE_GetConfigData(uint16_t conn_handle, uint16_t attr_handle, struct 
 
 static int BLE_NotifyConfigData(uint16_t con_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    os_mbuf_append(ctxt->om, "Data from the server", strlen("Data from the server"));
+    if (!resState.IsAccesable)
+    {
+        os_mbuf_append(ctxt->om, "Sorry You Cann't Access the Kit", strlen("Sorry You Cann't Access the Kit"));
+    }
+    else
+    {
+        os_mbuf_append(ctxt->om, "Open to access the kit", strlen("Data from the server"));
+    }
+
     return 0;
 }
 
 static const struct ble_gatt_svc_def gatt_svcs[] = {
     {.type = BLE_GATT_SVC_TYPE_PRIMARY,
-     .uuid = BLE_UUID16_DECLARE(SERVICE_UUID), // Define UUID for device type
+     .uuid = BLE_UUID16_DECLARE(PIN_SERVICE_UUID), // Define UUID for device type
      .characteristics = (struct ble_gatt_chr_def[]){
-         {.uuid = BLE_UUID16_DECLARE(READ_CHARA_UUID), // Define UUID for reading
+         {.uuid = BLE_UUID16_DECLARE(PIN_READ_CHARA_UUID), // Define UUID for reading
           .flags = BLE_GATT_CHR_F_READ,
-          .access_cb = BLE_NotifyConfigData},
+          .access_cb = BLE_NotifyPIN},
 
-         {.uuid = BLE_UUID16_DECLARE(WRITE_CHARA_UUID), // Define UUID for writing
+         {.uuid = BLE_UUID16_DECLARE(PIN_WRITE_CHARA_UUID), // Define UUID for writing
           .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
-          .access_cb = BLE_GetConfigData},
+          .access_cb = BLE_GetPIN},
          {0}}},
+
+    {.type = BLE_GATT_SVC_TYPE_PRIMARY,
+     .uuid = BLE_UUID16_DECLARE(SERVICE_UUID),                                                    // Define UUID for device type
+     .characteristics = (struct ble_gatt_chr_def[]){{.uuid = BLE_UUID16_DECLARE(READ_CHARA_UUID), // Define UUID for reading
+                                                     .flags = BLE_GATT_CHR_F_READ,
+                                                     .access_cb = BLE_NotifyConfigData},
+
+                                                    {.uuid = BLE_UUID16_DECLARE(WRITE_CHARA_UUID), // Define UUID for writing
+                                                     .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
+                                                     .access_cb = BLE_GetConfigData},
+                                                    {0}}},
+
     {0}};
 
 static int ble_gap_event(struct ble_gap_event *event, void *arg)
@@ -69,7 +180,7 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg)
     // Handle different BLE GAP (Generic Access Profile) events
     switch (event->type)
     {
-    
+
     // Case when a connection event occurs ----------------------------------------------------------
     case BLE_GAP_EVENT_CONNECT:
         ESP_LOGI("GAP", "BLE GAP EVENT CONNECT %s", event->connect.status == 0 ? "OK!" : "FAILED!");
@@ -131,7 +242,7 @@ void host_task(void *param)
      * Start the NimBLE host stack task, which handles BLE operations such as
      * advertising, connections, GATT server/client actions, and event processing.
      * This function will run indefinitely unless explicitly stopped using nimble_port_stop().
-    */
+     */
     nimble_port_run();
 }
 
@@ -177,7 +288,7 @@ void BLE_Task()
         {
             // Get the current time in microseconds
             int64_t n = esp_timer_get_time();
-            
+
             // Check if the button has been pressed
             if ((n - m) / 1000 >= PRESSED_CONFIG_TIME)
             {
@@ -186,7 +297,7 @@ void BLE_Task()
                 // Set BLE advertising parameters:
                 // - BLE_GAP_CONN_MODE_UND: Device is connectable
                 // - BLE_GAP_DISC_MODE_GEN: Device is generally discoverable
-                adv_params.conn_mode = BLE_GAP_CONN_MODE_UND; 
+                adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
                 adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
 
                 // Start BLE advertising with the defined parameters
