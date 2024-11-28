@@ -8,6 +8,7 @@
 #include "Memory_module.h"
 #include "DataHandle.h"
 #include "Relay_module.h"
+#include "WIFI_module.h"
 
 void Task_ConfigMode(void *param)
 {
@@ -52,4 +53,9 @@ void app_main()
 
     connect_ble();
     xTaskCreate(Task_ConfigMode, "Task_ConfigMode", 2048, NULL, 5, NULL);
+
+    // WIFI_Init(getData.wifiSSID, getData.wifiPassword);
+    // WIFI_StartConnection();
+    // while (!(WIFI_IsInternetConnected()));
+    
 }
