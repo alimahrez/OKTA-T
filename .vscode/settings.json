@@ -13,7 +13,8 @@
         "datahandle.h": "c",
         "memory_module.h": "c",
         "relay_module.h": "c",
-        "ble_module.h": "c"
+        "ble_module.h": "c",
+        "esp_log.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

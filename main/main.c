@@ -9,6 +9,166 @@
 #include "DataHandle.h"
 #include "Relay_module.h"
 #include "WIFI_module.h"
+#include "MQTT_module.c"
+#include "JSON_module.h"
+
+credentialConfig getData;
+
+void connectedToBroker()
+{
+    ESP_LOGI(MQTT_TAG, "Connected to MQTT broker");
+    MQTT_Subscribe(getData.relay1);
+    MQTT_Subscribe(getData.relay2);
+    MQTT_Subscribe(getData.relay3);
+    MQTT_Subscribe(getData.relay4);
+    MQTT_Subscribe(getData.relay5);
+    MQTT_Subscribe(getData.relay6);
+    MQTT_Subscribe(getData.relay7);
+    MQTT_Subscribe(getData.relay8);
+}
+
+void RecivedMsg()
+{
+    int32_t relayNumber,relayState;
+
+    ESP_LOGI(MQTT_TAG, "recived msg");
+    ESP_LOGI(MQTT_TAG, "Received message on topic: %.*s", General_event->topic_len, General_event->topic);
+    ESP_LOGI(MQTT_TAG, "Message: %.*s", General_event->data_len, General_event->data);
+
+    JSON_ExtractInt32(General_event->data, "relayNo", &relayNumber);
+    JSON_ExtractInt32(General_event->data, "state", &relayState);
+
+    switch (relayNumber)
+    {
+    case 1:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        
+        break;
+
+    case 2:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 3:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 4:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 5:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 6:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 7:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 8:
+        if (relayState == 1)
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Open", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+        else
+        {
+            ESP_LOGI(MQTT_TAG, "Relay No %ld Is Close", relayNumber);
+            Relay_Set((uint8_t)relayNumber, (bool)relayState);
+        }
+
+        break;
+
+    case 16:
+            Relay_SetGroup((bool)relayState);
+        break;
+    default:
+        break;
+    }
+}
+
+void UnsubscribedFromTopic()
+{
+    ESP_LOGI(MQTT_TAG, "unsubscribed from the topic");
+}
+
+void DisconnectedToBroker()
+{
+    ESP_LOGI(MQTT_TAG, "Disconnected to MQTT broker");
+}
 
 void Task_ConfigMode(void *param)
 {
@@ -17,9 +177,6 @@ void Task_ConfigMode(void *param)
 
 void app_main()
 {
-    credentialConfig getData;
-
-
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
@@ -28,34 +185,18 @@ void app_main()
         err = nvs_flash_init();
     }
     ESP_ERROR_CHECK(err);
-
+    Rleay_Init();
+    Relay_RetDataState();
     RetrieveConfigFromStorage(&getData);
-
-    // printf("%s\n", getData.wifiSSID);
-    // printf("%s\n", getData.wifiPassword);
-
-    // printf("%s\n", getData.mqttBroker);
-    // printf("%ld\n", getData.mqttPort);
-    // printf("%s\n", getData.mqttUsername);
-    // printf("%s\n", getData.mqttPassword);
-
-    // printf("%s\n", getData.relay1);
-    // printf("%s\n", getData.relay2);
-    // printf("%s\n", getData.relay3);
-    // printf("%s\n", getData.relay4);
-    // printf("%s\n", getData.relay5);
-    // printf("%s\n", getData.relay6);
-    // printf("%s\n", getData.relay7);
-    // printf("%s\n", getData.relay8);
-    // printf("%s\n", getData.tempSensor);
-    // printf("%s\n", getData.lightSensor);
-    // printf("%s\n", getData.doorSensor);
-
     connect_ble();
+    WIFI_Init(getData.wifiSSID, getData.wifiPassword);
     xTaskCreate(Task_ConfigMode, "Task_ConfigMode", 2048, NULL, 5, NULL);
-
-    // WIFI_Init(getData.wifiSSID, getData.wifiPassword);
-    // WIFI_StartConnection();
-    // while (!(WIFI_IsInternetConnected()));
+    WIFI_StartConnection();
+    while (!(WIFI_IsInternetConnected()));
+    MQTT_EventConnectedCallback(connectedToBroker);
+    MQTT_EventDataActionCallback(RecivedMsg);
+    MQTT_EventUnsubscribedCallback(UnsubscribedFromTopic);
+    MQTT_EventDisconnectedCallback(DisconnectedToBroker);
+    MQTT_Connect(getData.mqttBroker, getData.mqttPort, getData.mqttUsername, getData.mqttPassword);
     
 }
