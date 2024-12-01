@@ -15,5 +15,7 @@
 
 void Rleay_Init();
 void Relay_Set(uint8_t relayNumber, bool State);
+void Relay_SetGroup(bool State);
+void Relay_RetDataState();
 
 #endif // RELAY_MODULE_H
