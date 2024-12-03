@@ -1,16 +1,21 @@
-/**
+/******************************************************************************
  * @file        JOSN_module.c
- * @author      Ali Mahrez
- * @date        November 19, 2024
- * @version     1.0
+ * @brief       Utility functions for managing non-volatile storage (NVS) on ESP32.
+ *
+ * @author      Eng. Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Nov 19, 2024
+ * @version     Xbeta
+ * @copyright   © 2024 Smart Egat. All rights reserved.
  *
  * @details
- * The C file implements utility functions to parse JSON strings 
- * and extract specific data types (string and integer values). 
- * These functions are designed to simplify the process of retrieving key-value pairs from JSON data in embedded systems, 
+ * The C file implements utility functions to parse JSON strings
+ * and extract specific data types (string and integer values).
+ * These functions are designed to simplify the process of retrieving key-value pairs from JSON data in embedded systems,
  * ensuring robust error handling and efficient memory management.
- */
 
+ ******************************************************************************/
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>

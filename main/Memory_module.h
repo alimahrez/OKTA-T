@@ -1,3 +1,20 @@
+/******************************************************************************
+ * @file        MEMORY_module.h
+ * @brief       Memory module header for managing ESP32 Non-Volatile Storage (NVS).
+ *
+ * @author      Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Nov 24, 2024
+ * @version     Xbeta
+ *
+ * @details
+ * This header file declares the APIs for saving and loading data to and from
+ * the Non-Volatile Storage (NVS) of the ESP32. It provides functions to store
+ * and retrieve both string and integer data, enabling persistent storage across
+ * device reboots or power cycles.
+ ******************************************************************************/
+
 #ifndef MEMORY_MODULE_H
 #define MEMORY_MODULE_H
 

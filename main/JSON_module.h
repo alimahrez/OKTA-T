@@ -1,3 +1,18 @@
+/******************************************************************************
+ * @file        JSON_module.h
+ * @brief       JSON module header for extracting values from JSON-formatted strings.
+ *
+ * @author      Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Nov 19, 2024
+ * @version     Xbeta
+ *
+ * @details
+ * This header file declares the APIs for extracting string and integer values
+ * from a JSON-formatted string. It provides functions to retrieve values based
+ * on a specified key, supporting both string and integer data types.
+ ******************************************************************************/
 #ifndef JSON_MODULE_H
 #define JSON_MODULE_H
 

@@ -1,3 +1,32 @@
+/******************************************************************************
+ * @file        MQTT_module.c
+ * @brief
+ *
+ * @author      Eng. Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Dec 1, 2024
+ * @version     Xbeta
+ * @copyright   © 2024 Smart Egat. All rights reserved.
+ *
+ * @details
+ * This file implements the MQTT client functionality for the ESP32 using the ESP-IDF framework.
+ * The module provides functions to connect to an MQTT broker, subscribe to topics, publish
+ * messages, and handle various MQTT events such as connection, data reception, disconnection,
+ * and unsubscription. It also allows users to register callback functions that are triggered
+ * during specific MQTT events, making it a flexible solution for interacting with MQTT brokers.
+ *
+ * The module handles the following tasks:
+ * - Initializes the MQTT client with specified configuration (broker URI, port, credentials).
+ * - Registers callback functions to handle events such as connection, data reception,
+ *   disconnection, and unsubscription.
+ * - Handles MQTT events through an event-driven approach with the ESP32 event loop.
+ * - Provides functionality to publish messages to MQTT topics and subscribe to topics for data
+ *   reception.
+ *
+ * This implementation ensures efficient use of system resources by leveraging FreeRTOS tasks and
+ * event groups for event handling.
+ ******************************************************************************/
 #include <stdio.h>                 // Standard input/output functions
 #include <stdbool.h>               // Standard boolean type
 #include "freertos/FreeRTOS.h"     // FreeRTOS core definitions

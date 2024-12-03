@@ -14,7 +14,10 @@
         "memory_module.h": "c",
         "relay_module.h": "c",
         "ble_module.h": "c",
-        "esp_log.h": "c"
+        "esp_log.h": "c",
+        "wifi_module.h": "c",
+        "random": "c",
+        "esp_http_client.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

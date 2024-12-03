@@ -1,13 +1,19 @@
-/**
- * @file        RELAY_module.c
- * @brief
- * @author      Ali Mahrez
- * @date        November 27, 2024
- * @version     1.0
+/******************************************************************************
+ * @file        Relay_module.c
+ * @brief       Controls relay modules in an IoT system.
+ *
+ * @author      Eng. Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Nov 27, 2024
+ * @version     Xbeta
+ * @copyright   © 2024 Smart Egat. All rights reserved.
  *
  * @details
-
- */
+ * This module provides functions to initialize and control up to 8 relays connected
+ * to the ESP32. It supports setting individual or group relay states and retrieves
+ * the last saved states from non-volatile storage.
+ ******************************************************************************/
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -21,7 +27,7 @@
 
 
 
-void Rleay_Init()
+void Relay_Init()
 {
     gpio_set_direction(RELAY_1_PIN, GPIO_MODE_OUTPUT);
     gpio_set_direction(RELAY_2_PIN, GPIO_MODE_OUTPUT);

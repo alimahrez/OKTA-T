@@ -1,3 +1,19 @@
+/******************************************************************************
+ * @file        MQTT_module.h
+ * @brief       MQTT module header for managing MQTT functionality on ESP32.
+ *
+ * @author      Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Dec 1, 2024
+ * @version     Xbeta
+ *
+ * @details
+ * This header file declares the APIs for managing MQTT connections, publishing,
+ * subscribing, and handling MQTT events on an ESP32 device. It provides a simple
+ * interface for establishing MQTT connections, subscribing to topics, publishing
+ * messages, and handling various MQTT events via callback functions.
+ ******************************************************************************/
 #ifndef MQTT_MODULE_H
 #define MQTT_MODULE_H
 

@@ -1,15 +1,20 @@
-/**
+/******************************************************************************
  * @file        Memory_module.c
- * @author      Ali Mahrez
- * @date        November 19, 2024
- * @version     1.0
+ * @brief       Utility functions for managing non-volatile storage (NVS) on ESP32.
+ *
+ * @author      Eng. Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Nov 24, 2024
+ * @version     Xbeta
+ * @copyright   © 2024 Smart Egat. All rights reserved.
  *
  * @details
- * This C file provides utility functions for saving and retrieving data in the Non-Volatile Storage (NVS) of an ESP32. 
- * Specifically, the file includes functions to handle int32_t values, 
- * allowing you to persist integers across device reboots or power cycles. 
- * These functions simplify interactions with the NVS by abstracting low-level API calls and providing clear error handling.
- */
+ * This file provides APIs to save and retrieve data such as strings and integers
+ * in NVS. These functions abstract ESP32 NVS API calls, making it easier to manage
+ * configuration data and persist information across device resets.
+
+ ******************************************************************************/
 
 #include <stdio.h>     // For printf and basic input/output functions
 #include <stdint.h>    // For standard integer types like int32_t

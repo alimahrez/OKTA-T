@@ -1,3 +1,19 @@
+/******************************************************************************
+ * @file        WIFI_module.c
+ * @brief       Manages Wi-Fi connectivity for ESP32-based IoT systems.
+ *
+ * @author      Eng. Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Nov 28, 2024
+ * @version     Xbeta
+ * @copyright   © 2024 Smart Egat. All rights reserved.
+ *
+ * @details
+ * This module provides functions to initialize and configure Wi-Fi in station mode.
+ * It handles connecting to an access point and includes a utility to check internet
+ * connectivity by attempting to connect to a public server.
+ ******************************************************************************/
 #include <stdio.h>
 #include <stdbool.h>
 #include "esp_log.h"
