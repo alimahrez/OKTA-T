@@ -1,17 +1,20 @@
-/**
+/******************************************************************************
  * @file        BLE_module.c
  * @brief       BLE (Bluetooth Low Energy) server using ESP32 and the NimBLE stack.
- * @author      Ali Mahrez
- * @date        November 19, 2024
- * @version     1.0
+ *
+ * @author      Eng. Ali Mahrez
+ * @company     Smart Egat
+ * @email       a.mahrez@smart-egat.com
+ * @date        Dec 3, 2024
+ * @version     Xbeta
+ * @copyright   © 2024 Smart Egat. All rights reserved.
  *
  * @details
  * This code implements a BLE (Bluetooth Low Energy) server
  * using ESP32 and the NimBLE stack.
  * It defines the BLE characteristics for reading and writing,
  * handles BLE events (e.g., connection, disconnection),
- */
-
+ ******************************************************************************/
 #include <stdio.h>
 #include <stdbool.h>
 #include "esp_event.h"
@@ -46,61 +49,8 @@ struct responseStatus
     bool IsAccesable;
 } resState;
 
-// int32_t authenticate(const char *saved_pin, const char *input_pin)
-// {
-//     return strcmp(saved_pin, input_pin) == 0;
-// }
-
-// void change_pin(char *saved_pin)
-// {
-//     char new_pin[PIN_LENGTH];
-//     char confirm_pin[PIN_LENGTH];
-
-//     printf("Enter new PIN: ");
-//     scanf("%s", new_pin);
-
-//     printf("Confirm new PIN: ");
-//     scanf("%s", confirm_pin);
-
-//     if (strcmp(new_pin, confirm_pin) == 0)
-//     {
-//         strcpy(saved_pin, new_pin);
-//         printf("PIN changed successfully!\n");
-//     }
-//     else
-//     {
-//         printf("PIN confirmation does not match. Try again.\n");
-//     }
-// }
-
 static int BLE_GetPIN(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    // uint32_t receviedPass;
-    // Memory_LoadInt32("storage","pass",&BLE_PASSWORD);
-    // char *data = (char *)ctxt->om->om_data;
-    // resState.IsJosnOk = JSON_ExtractInt32(data, "password", &receviedPass);
-    // if (!resState.IsJosnOk)
-    // {
-    //     printf("Sorry JSON aren't OK\n");
-    // }
-    // else
-    // {
-    //     resState.IsPasswordTrue = authenticate(BLE_PASSWORD, receviedPass);
-    //     if (!resState.IsPasswordTrue)
-    //     {
-    //         printf("Wrong PIN\n");
-    //     }
-    //     else
-    //     {
-    //         printf("PIN OK\n");
-    //         // give him all the kit configuration
-
-    //     }
-
-    // }
-    // // printf("%d %s\n", strcmp(data, (char *)"LIGHT ON") == 0, data);
-    // memset(data, 0, strlen(data));
-
     return 0;
 }
 
