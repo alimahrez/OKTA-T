@@ -198,5 +198,5 @@ void app_main()
     MQTT_EventUnsubscribedCallback(UnsubscribedFromTopic);
     MQTT_EventDisconnectedCallback(DisconnectedToBroker);
     MQTT_Connect(getData.mqttBroker, getData.mqttPort, getData.mqttUsername, getData.mqttPassword);
-    
+    MQTT_Connect(getData.mqttBroker, getData.mqttPort, getData.mqttUsername, getData.mqttPassword);
 }
