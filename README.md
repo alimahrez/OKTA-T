@@ -29,7 +29,7 @@ This project is built on the ESP32 platform and uses the ESP-IDF framework for d
 - **ESP32 Development Board** (e.g., ESP-WROOM-32)
 - **ESP-IDF Framework**: v4.x or higher
 - **FreeRTOS**: For task management
-- **PlatformIO** or **VSCode** (for development)
+- **VSCode** (for development)
 - **Libraries**:
   - `nvs_flash`: For persistent storage (non-volatile storage)
   - `cJSON`: For JSON parsing
