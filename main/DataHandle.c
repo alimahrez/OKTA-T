@@ -31,35 +31,36 @@ static const char *DATA_HANDLE_TAG = "DATA_HANDLE"; // Tag for logging
 DataErrorHandle GetDataAtRunTime(char *js_string, credentialConfig *config)
 {
     // Extract the configuration type from the JSON string
-    if (!(JSON_ExtractInt32(js_string, "configtype", &config->configType)))
+    if (!JSON_ExtractInt32(js_string, "configtype", &config->configType))
     {
-        return JS_CONFIG_TYPE_ERROR; // Error if config type is not found
+        return JS_CONFIG_TYPE_ERROR;
     }
 
+    // Handle configuration based on configType
     switch (config->configType)
     {
     case WIFI_CONFIG_TYPE:
-        // If it's a Wi-Fi config, extract Wi-Fi SSID and password from JSON
-        if (!(JSON_ExtractString(js_string, "wifissid", config->wifiSSID, sizeof(config->wifiSSID)) &&
-              JSON_ExtractString(js_string, "wifipassword", config->wifiPassword, sizeof(config->wifiPassword))))
+        if (!(
+                JSON_ExtractString(js_string, "wifissid", config->wifiSSID, sizeof(config->wifiSSID)) &&
+                JSON_ExtractString(js_string, "wifipassword", config->wifiPassword, sizeof(config->wifiPassword))))
         {
-            return JS_WIFI_CRD_ERROR; // Error if Wi-Fi credentials are missing or invalid
+            return JS_WIFI_CRD_ERROR;
         }
-        // Save the extracted Wi-Fi credentials to non-volatile storage
+        // Save Wi-Fi credentials
         Memory_SaveString("storage", "ssid", config->wifiSSID);
         Memory_SaveString("storage", "password", config->wifiPassword);
         break;
 
     case MQTT_CONFIG_TYPE:
-        // If it's an MQTT config, extract the MQTT broker details from JSON
-        if (!(JSON_ExtractString(js_string, "mqttbroker", config->mqttBroker, sizeof(config->mqttBroker)) &&
-              JSON_ExtractInt32(js_string, "mqttport", &config->mqttPort) &&
-              JSON_ExtractString(js_string, "mqttusername", config->mqttUsername, sizeof(config->mqttUsername)) &&
-              JSON_ExtractString(js_string, "mqttpassword", config->mqttPassword, sizeof(config->mqttPassword))))
+        if (!(
+                JSON_ExtractString(js_string, "mqttbroker", config->mqttBroker, sizeof(config->mqttBroker)) &&
+                JSON_ExtractInt32(js_string, "mqttport", &config->mqttPort) &&
+                JSON_ExtractString(js_string, "mqttusername", config->mqttUsername, sizeof(config->mqttUsername)) &&
+                JSON_ExtractString(js_string, "mqttpassword", config->mqttPassword, sizeof(config->mqttPassword))))
         {
-            return JS_MQTT_CRD_ERROR; // Error if MQTT credentials are missing or invalid
+            return JS_MQTT_CRD_ERROR;
         }
-        // Save the extracted MQTT credentials to non-volatile storage
+        // Save MQTT credentials
         Memory_SaveString("storage", "mqttbroker", config->mqttBroker);
         Memory_SaveInt32("storage", "mqttport", config->mqttPort);
         Memory_SaveString("storage", "mqttusername", config->mqttUsername);
@@ -67,188 +68,104 @@ DataErrorHandle GetDataAtRunTime(char *js_string, credentialConfig *config)
         break;
 
     case TOPIC_CONFIG_TYPE:
-        // If it's a topic config, extract topic-related data from JSON
-        if (!(JSON_ExtractInt32(js_string, "tconfigtype", &config->topicConfigType)))
+        if (!JSON_ExtractInt32(js_string, "tconfigtype", &config->topicConfigType))
         {
-            return JS_TOPIC_CONFIG_ERROR; // Error if topic configuration is invalid
+            return JS_TOPIC_CONFIG_ERROR;
         }
-        switch (config->topicConfigType)
+
+        const struct
         {
-        case TOPIC_RELAY_TYPE_1:
-            if (!(JSON_ExtractString(js_string, "relay1_topic", config->relay1, sizeof(config->relay1))))
-            {
-                return JS_TOPIC_1_ERROR; // Error if topic for relay 1 is invalid
-            }
-            Memory_SaveString("storage", "relay1_topic", config->relay1);
-            break;
+            int topicType;
+            const char *jsonKey;
+            char *storage;
+            size_t storageSize;
+            DataErrorHandle errorCode;
+        } topicConfigMap[] = {
+            {TOPIC_RELAY_TYPE, "relay_topic", config->relay, sizeof(config->relay), JS_TOPIC_ERROR},
+            {TOPIC_TEMP_TYPE, "temp_topic", config->tempSensor, sizeof(config->tempSensor), JS_TOPIC_TEMP_ERROR},
+            {TOPIC_LIGHT_TYPE, "light_topic", config->lightSensor, sizeof(config->lightSensor), JS_TOPIC_LIGHT_ERROR},
+            {TOPIC_DOOR_TYPE, "door_topic", config->doorSensor, sizeof(config->doorSensor), JS_TOPIC_DOOR_ERROR},
+        };
 
-        case TOPIC_RELAY_TYPE_2:
-            if (!(JSON_ExtractString(js_string, "relay2_topic", config->relay2, sizeof(config->relay2))))
+        for (size_t i = 0; i < sizeof(topicConfigMap) / sizeof(topicConfigMap[0]); i++)
+        {
+            if (topicConfigMap[i].topicType == config->topicConfigType)
             {
-                return JS_TOPIC_2_ERROR; // Error if topic for relay 2 is invalid
+                if (!JSON_ExtractString(js_string, topicConfigMap[i].jsonKey, topicConfigMap[i].storage, topicConfigMap[i].storageSize))
+                {
+                    return topicConfigMap[i].errorCode;
+                }
+                Memory_SaveString("storage", topicConfigMap[i].jsonKey, topicConfigMap[i].storage);
+                break;
             }
-            Memory_SaveString("storage", "relay2_topic", config->relay2);
-            break;
-
-        case TOPIC_RELAY_TYPE_3:
-            if (!(JSON_ExtractString(js_string, "relay3_topic", config->relay3, sizeof(config->relay3))))
-            {
-                return JS_TOPIC_3_ERROR; // Error if topic for relay 3 is invalid
-            }
-            Memory_SaveString("storage", "relay3_topic", config->relay3);
-            break;
-
-        case TOPIC_RELAY_TYPE_4:
-            if (!(JSON_ExtractString(js_string, "relay4_topic", config->relay4, sizeof(config->relay4))))
-            {
-                return JS_TOPIC_4_ERROR; // Error if topic for relay 4 is invalid
-            }
-            Memory_SaveString("storage", "relay4_topic", config->relay4);
-            break;
-
-        case TOPIC_RELAY_TYPE_5:
-            if (!(JSON_ExtractString(js_string, "relay5_topic", config->relay5, sizeof(config->relay5))))
-            {
-                return JS_TOPIC_5_ERROR; // Error if topic for relay 5 is invalid
-            }
-            Memory_SaveString("storage", "relay5_topic", config->relay5);
-            break;
-
-        case TOPIC_RELAY_TYPE_6:
-            if (!(JSON_ExtractString(js_string, "relay6_topic", config->relay6, sizeof(config->relay6))))
-            {
-                return JS_TOPIC_6_ERROR; // Error if topic for relay 6 is invalid
-            }
-            Memory_SaveString("storage", "relay6_topic", config->relay6);
-            break;
-
-        case TOPIC_RELAY_TYPE_7:
-            if (!(JSON_ExtractString(js_string, "relay7_topic", config->relay7, sizeof(config->relay7))))
-            {
-                return JS_TOPIC_7_ERROR; // Error if topic for relay 7 is invalid
-            }
-            Memory_SaveString("storage", "relay7_topic", config->relay7);
-            break;
-
-        case TOPIC_RELAY_TYPE_8:
-            if (!(JSON_ExtractString(js_string, "relay8_topic", config->relay8, sizeof(config->relay8))))
-            {
-                return JS_TOPIC_8_ERROR; // Error if topic for relay 8 is invalid
-            }
-            Memory_SaveString("storage", "relay8_topic", config->relay8);
-            break;
-
-        case TOPIC_TEMP_TYPE:
-            if (!(JSON_ExtractString(js_string, "temp_topic", config->tempSensor, sizeof(config->tempSensor))))
-            {
-                return JS_TOPIC_TEMP_ERROR; // Error if topic for temperature sensor is invalid
-            }
-            Memory_SaveString("storage", "temp_topic", config->tempSensor);
-            break;
-
-        case TOPIC_LIGHT_TYPE:
-            if (!(JSON_ExtractString(js_string, "light_topic", config->lightSensor, sizeof(config->lightSensor))))
-            {
-                return JS_TOPIC_LIGHT_ERROR; // Error if topic for light sensor is invalid
-            }
-            Memory_SaveString("storage", "light_topic", config->lightSensor);
-            break;
-
-        case TOPIC_DOOR_TYPE:
-            if (!(JSON_ExtractString(js_string, "door_topic", config->doorSensor, sizeof(config->doorSensor))))
-            {
-                return JS_TOPIC_DOOR_ERROR; // Error if topic for door sensor is invalid
-            }
-            Memory_SaveString("storage", "door_topic", config->doorSensor);
-            break;
-
-        default:
-            break;
         }
         break;
 
     default:
-        break;
+        return ALL_IS_OK; // Return success for unsupported configType
     }
 
-    return ALL_IS_OK; // Return success if no errors
+    return ALL_IS_OK;
 }
 
 // Function to display error messages based on error code
 void DisplyGetError(DataErrorHandle getError)
 {
-    switch (getError)
+    // Map of error codes to their corresponding messages
+    const struct
     {
-    case JS_CONFIG_TYPE_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_CONFIG_TYPE_ERROR");
-        break;
-    case JS_WIFI_CRD_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_WIFI_CRD_ERROR");
-        break;
-    case JS_MQTT_CRD_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_MQTT_CRD_ERROR");
-        break;
-    case JS_TOPIC_CONFIG_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_CONFIG_ERROR");
-        break;
-    case JS_TOPIC_1_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_1_ERROR");
-        break;
-    case JS_TOPIC_2_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_2_ERROR");
-        break;
-    case JS_TOPIC_3_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_3_ERROR");
-        break;
-    case JS_TOPIC_4_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_4_ERROR");
-        break;
-    case JS_TOPIC_5_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_5_ERROR");
-        break;
-    case JS_TOPIC_6_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_6_ERROR");
-        break;
-    case JS_TOPIC_7_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_7_ERROR");
-        break;
-    case JS_TOPIC_8_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_8_ERROR");
-        break;
-    case JS_TOPIC_TEMP_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_TEMP_ERROR");
-        break;
-    case JS_TOPIC_LIGHT_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_LIGHT_ERROR");
-        break;
-    case JS_TOPIC_DOOR_ERROR:
-        ESP_LOGE(DATA_HANDLE_TAG, "JS_TOPIC_DOOR_ERROR");
-        break;
-    default:
-        ESP_LOGI(DATA_HANDLE_TAG, "ALL_IS_OK");
-        break;
+        DataErrorHandle errorCode;
+        const char *errorMessage;
+    } errorMap[] = {
+        {JS_CONFIG_TYPE_ERROR, "JS_CONFIG_TYPE_ERROR"},
+        {JS_WIFI_CRD_ERROR, "JS_WIFI_CRD_ERROR"},
+        {JS_MQTT_CRD_ERROR, "JS_MQTT_CRD_ERROR"},
+        {JS_TOPIC_CONFIG_ERROR, "JS_TOPIC_CONFIG_ERROR"},
+        {JS_TOPIC_ERROR, "JS_TOPIC_ERROR"},
+        {JS_TOPIC_TEMP_ERROR, "JS_TOPIC_TEMP_ERROR"},
+        {JS_TOPIC_LIGHT_ERROR, "JS_TOPIC_LIGHT_ERROR"},
+        {JS_TOPIC_DOOR_ERROR, "JS_TOPIC_DOOR_ERROR"}};
+
+    // Find and log the error message
+    for (size_t i = 0; i < sizeof(errorMap) / sizeof(errorMap[0]); i++)
+    {
+        if (errorMap[i].errorCode == getError)
+        {
+            ESP_LOGE(DATA_HANDLE_TAG, "%s", errorMap[i].errorMessage);
+            return;
+        }
     }
+
+    // Default case: No error or unrecognized error code
+    ESP_LOGI(DATA_HANDLE_TAG, "ALL_IS_OK");
 }
 
 // Function to retrieve configuration data from non-volatile storage
 void RetrieveConfigFromStorage(credentialConfig *config)
 {
-    // Load configuration data from storage into the config structure
+    // Define a mapping of storage keys to config structure members
+    const struct
+    {
+        const char *storageKey;
+        char *configMember;
+        size_t memberSize;
+    } stringMappings[] = {
+        {"ssid", config->wifiSSID, sizeof(config->wifiSSID)},
+        {"password", config->wifiPassword, sizeof(config->wifiPassword)},
+        {"mqttbroker", config->mqttBroker, sizeof(config->mqttBroker)},
+        {"mqttusername", config->mqttUsername, sizeof(config->mqttUsername)},
+        {"mqttpassword", config->mqttPassword, sizeof(config->mqttPassword)},
+        {"relay_topic", config->relay, sizeof(config->relay)},
+        {"temp_topic", config->tempSensor, sizeof(config->tempSensor)},
+        {"light_topic", config->lightSensor, sizeof(config->lightSensor)},
+        {"door_topic", config->doorSensor, sizeof(config->doorSensor)}};
+
+    // Load all string values into the config structure
+    for (size_t i = 0; i < sizeof(stringMappings) / sizeof(stringMappings[0]); i++)
+    {
+        Memory_LoadString("storage", stringMappings[i].storageKey, stringMappings[i].configMember, stringMappings[i].memberSize);
+    }
+
+    // Load integer values separately
     Memory_LoadInt32("storage", "mqttport", &config->mqttPort);
-    Memory_LoadString("storage", "ssid", config->wifiSSID, sizeof(config->wifiSSID));
-    Memory_LoadString("storage", "password", config->wifiPassword, sizeof(config->wifiPassword));
-    Memory_LoadString("storage", "mqttbroker", config->mqttBroker, sizeof(config->mqttBroker));
-    Memory_LoadString("storage", "mqttusername", config->mqttUsername, sizeof(config->mqttUsername));
-    Memory_LoadString("storage", "mqttpassword", config->mqttPassword, sizeof(config->mqttPassword));
-    Memory_LoadString("storage", "relay1_topic", config->relay1, sizeof(config->relay1));
-    Memory_LoadString("storage", "relay2_topic", config->relay2, sizeof(config->relay2));
-    Memory_LoadString("storage", "relay3_topic", config->relay3, sizeof(config->relay3));
-    Memory_LoadString("storage", "relay4_topic", config->relay4, sizeof(config->relay4));
-    Memory_LoadString("storage", "relay5_topic", config->relay5, sizeof(config->relay5));
-    Memory_LoadString("storage", "relay6_topic", config->relay6, sizeof(config->relay6));
-    Memory_LoadString("storage", "relay7_topic", config->relay7, sizeof(config->relay7));
-    Memory_LoadString("storage", "relay8_topic", config->relay8, sizeof(config->relay8));
-    Memory_LoadString("storage", "temp_topic", config->tempSensor, sizeof(config->tempSensor));
-    Memory_LoadString("storage", "light_topic", config->lightSensor, sizeof(config->lightSensor));
-    Memory_LoadString("storage", "door_topic", config->doorSensor, sizeof(config->doorSensor));
 }

@@ -29,14 +29,7 @@
 #define TOPIC_CONFIG_TYPE 2
 
 // Topic type identifiers
-#define TOPIC_RELAY_TYPE_1 1
-#define TOPIC_RELAY_TYPE_2 2
-#define TOPIC_RELAY_TYPE_3 3
-#define TOPIC_RELAY_TYPE_4 4
-#define TOPIC_RELAY_TYPE_5 5
-#define TOPIC_RELAY_TYPE_6 6
-#define TOPIC_RELAY_TYPE_7 7
-#define TOPIC_RELAY_TYPE_8 8
+#define TOPIC_RELAY_TYPE 1
 #define TOPIC_TEMP_TYPE 9
 #define TOPIC_LIGHT_TYPE 10
 #define TOPIC_DOOR_TYPE 11
@@ -61,14 +54,7 @@ typedef struct Configuration
     char mqttPassword[MQTT_CRED_LENGTH]; // MQTT password
     char mqttBroker[MQTT_CRED_LENGTH];   // MQTT broker URI
 
-    char relay1[MQTT_TOPIC_LENGTH];      // Relay 1 topic
-    char relay2[MQTT_TOPIC_LENGTH];      // Relay 2 topic
-    char relay3[MQTT_TOPIC_LENGTH];      // Relay 3 topic
-    char relay4[MQTT_TOPIC_LENGTH];      // Relay 4 topic
-    char relay5[MQTT_TOPIC_LENGTH];      // Relay 5 topic
-    char relay6[MQTT_TOPIC_LENGTH];      // Relay 6 topic
-    char relay7[MQTT_TOPIC_LENGTH];      // Relay 7 topic
-    char relay8[MQTT_TOPIC_LENGTH];      // Relay 8 topic
+    char relay[MQTT_TOPIC_LENGTH];      // Relay 1 topic
     char lightSensor[MQTT_TOPIC_LENGTH]; // Light sensor topic
     char tempSensor[MQTT_TOPIC_LENGTH];  // Temperature sensor topic
     char doorSensor[MQTT_TOPIC_LENGTH];  // Door sensor topic
@@ -87,14 +73,7 @@ typedef enum DATA_ERROR_HANDLING
     JS_WIFI_CRD_ERROR,     // Error: Invalid Wi-Fi credentials
     JS_MQTT_CRD_ERROR,     // Error: Invalid MQTT credentials
     JS_TOPIC_CONFIG_ERROR, // Error: Invalid topic configuration
-    JS_TOPIC_1_ERROR,      // Error: Invalid topic for relay 1
-    JS_TOPIC_2_ERROR,      // Error: Invalid topic for relay 2
-    JS_TOPIC_3_ERROR,      // Error: Invalid topic for relay 3
-    JS_TOPIC_4_ERROR,      // Error: Invalid topic for relay 4
-    JS_TOPIC_5_ERROR,      // Error: Invalid topic for relay 5
-    JS_TOPIC_6_ERROR,      // Error: Invalid topic for relay 6
-    JS_TOPIC_7_ERROR,      // Error: Invalid topic for relay 7
-    JS_TOPIC_8_ERROR,      // Error: Invalid topic for relay 8
+    JS_TOPIC_ERROR,      // Error: Invalid topic for relay
     JS_TOPIC_TEMP_ERROR,   // Error: Invalid topic for temperature sensor
     JS_TOPIC_LIGHT_ERROR,  // Error: Invalid topic for light sensor
     JS_TOPIC_DOOR_ERROR,   // Error: Invalid topic for door sensor
