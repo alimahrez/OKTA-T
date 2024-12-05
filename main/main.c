@@ -44,7 +44,7 @@ credentialConfig getData;
 void connectedToBroker()
 {
     ESP_LOGI(MQTT_TAG, "Connected to MQTT broker");
-    MQTT_Subscribe(getData.relay1); // Subscribe to the relay topic
+    MQTT_Subscribe(getData.relay); // Subscribe to the relay topic
 }
 
 /************************************************************************************************
